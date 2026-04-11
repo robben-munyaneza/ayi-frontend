@@ -1,174 +1,160 @@
-import React from "react";
-import { motion } from "framer-motion";
-import {
-  FaHandshake,
-  FaLightbulb,
-  FaUserFriends,
-  FaTools,
-  FaDollarSign,
-} from "react-icons/fa";
-import Tilt from "react-parallax-tilt";
+import React, { useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import { FaHandshake, FaLightbulb, FaUserFriends, FaTools, FaDollarSign } from "react-icons/fa";
 
-import parallaxHeader from "../assets/parallax2.jpg";
-import parallaxMission from "../assets/parallax1.jpg";
-import parallaxValues from "../assets/parallax1.jpg";
-import parallaxObjectives from "../assets/parallax2.jpg";
+// ─── Data ───────────────────────────────────────────────────────────────────
+
+const values = [
+  { icon: FaHandshake, title: "Integrity", desc: "Honesty and strong moral principles in all we do." },
+  { icon: FaLightbulb, title: "Ambitious", desc: "Driven to achieve excellence beyond expectations." },
+  { icon: FaUserFriends, title: "Accountability", desc: "Taking full responsibility for our actions." },
+  { icon: FaTools, title: "Collaboration", desc: "Valuing teamwork to drive innovation." },
+];
+
+const objectives = [
+  {
+    icon: FaDollarSign,
+    title: "Profitability",
+    desc: "Financing growth to provide robust investment resources.",
+  },
+  {
+    icon: FaUserFriends,
+    title: "Customer First",
+    desc: "Delivering the highest quality and greatest possible value.",
+  },
+  {
+    icon: FaTools,
+    title: "Innovation (Tech)",
+    desc: "Building on our technology to enable continuous growth.",
+  },
+  {
+    icon: FaHandshake,
+    title: "Social Impact",
+    desc: "Acting as an economic, intellectual, and social asset.",
+  },
+];
+
+// ─── Animation Variants ──────────────────────────────────────────────────────
+
+const fadeUpObj = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+};
+
+const staggerContainer = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.15 } },
+};
+
+// ─── Component ────────────────────────────────────────────────────────
 
 const Objectives = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
   return (
-    <div className="text-white" id="about">
-      {/* Header with Parallax Background */}
-      <div
-        className="h-[20vh] bg-fixed bg-center bg-cover flex items-center justify-center"
-        style={{ backgroundImage: `url(${parallaxHeader})` }}
-      >
-        <h1 className=" text-white text-3xl font-bold">Objectives</h1>
-      </div>
+    <section id="about" ref={ref} className="py-24 bg-gray-950 relative overflow-hidden">
+      {/* Background abstract shapes */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-900/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[30rem] h-[30rem] bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Mission and Vision with Parallax Background */}
-      <div
-        className="bg-fixed bg-center bg-cover py-24 px-6"
-        style={{ backgroundImage: `url(${parallaxMission})` }}
-      >
-        <div className="grid md:grid-cols-2 gap-12 bg-black/70 p-10 rounded-lg">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-            className="text-center p-6 bg-gray-900 bg-opacity-80 rounded-lg shadow-lg"
-          >
-            <h2 className="text-3xl font-semibold mb-4">Mission</h2>
-            <p className="text-lg text-gray-300">
-              We are committed to equipping young people with financial tools,
-              investment opportunities and entrepreneurial support they need to
-              build wealth and achieve financial independence. By fostering a
-              culture of smart saving and investment, we empower the next
-              generation to shape Africa’s economic future.
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+        {/* Section Header */}
+        <motion.div
+          className="text-center mb-20"
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          variants={fadeUpObj}
+        >
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <div className="h-px w-8 bg-indigo-500" />
+            <span className="text-indigo-400 text-sm font-semibold uppercase tracking-widest">About Us</span>
+            <div className="h-px w-8 bg-indigo-500" />
+          </div>
+          <h2 className="text-4xl sm:text-5xl font-extrabold text-white mb-6">
+            Driving Africa's <span className="text-gradient">Future</span>
+          </h2>
+        </motion.div>
+
+        {/* Mission & Vision */}
+        <motion.div
+          className="grid md:grid-cols-2 gap-8 mb-20"
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          variants={staggerContainer}
+        >
+          <motion.div variants={fadeUpObj} className="bg-gray-900/50 border border-white/5 p-8 sm:p-10 rounded-2xl backdrop-blur-sm">
+            <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-3">
+              <span className="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-sm">M</span>
+              Mission
+            </h3>
+            <p className="text-gray-400 text-lg leading-relaxed">
+              Equipping young people with the financial tools, investment opportunities, and entrepreneurial support they need to build wealth. By fostering a culture of smart saving, we empower the next generation to shape Africa’s economy.
             </p>
           </motion.div>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-            className="text-center p-6 bg-gray-900 bg-opacity-80 rounded-lg shadow-lg"
-          >
-            <h2 className="text-3xl font-semibold mb-4">Vision</h2>
-            <p className="text-lg text-gray-300">
-              We envision of a future where African youth lead the way in
-              financial empowerment, turning their dreams into sustainable
-              investment and thriving business through smart investment, capital
-              ventures, we aimed to drive economic growth and creating
-              opportunity.
+          <motion.div variants={fadeUpObj} className="bg-gray-900/50 border border-white/5 p-8 sm:p-10 rounded-2xl backdrop-blur-sm">
+            <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-3">
+              <span className="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-sm">V</span>
+              Vision
+            </h3>
+            <p className="text-gray-400 text-lg leading-relaxed">
+              A future where African youth lead the way in financial empowerment, turning dreams into thriving businesses through smart capital ventures, driving economic growth and creating widespread opportunity.
             </p>
           </motion.div>
-        </div>
-      </div>
+        </motion.div>
 
-      {/* Core Values with Parallax Background */}
-      <div
-        className="bg-fixed bg-center bg-cover py-24 px-6"
-        style={{ backgroundImage: `url(${parallaxValues})` }}
-      >
-        <div className="bg-black/70 p-10 rounded-lg">
-          <h2 className="text-4xl font-semibold text-center mb-12">
-            Our Core Values
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              {
-                icon: <FaHandshake className="text-5xl text-green-500 mb-4" />,
-                title: "Integrity",
-                desc: "We act with honesty and adhere to strong moral principles.",
-              },
-              {
-                icon: <FaLightbulb className="text-5xl text-green-500 mb-4" />,
-                title: "Ambitious",
-                desc: "We are driven to achieve excellence and go beyond expectations.",
-              },
-              {
-                icon: (
-                  <FaUserFriends className="text-5xl text-green-500 mb-4" />
-                ),
-                title: "Accountability",
-                desc: "We take responsibility for our actions and commitments.",
-              },
-              {
-                icon: <FaTools className="text-5xl text-green-500 mb-4" />,
-                title: "Creative Collaboration",
-                desc: "We encourage innovation and value teamwork in all our endeavors.",
-              },
-            ].map((value, i) => (
-              <Tilt
-                key={i}
-                tiltMaxAngleX={15}
-                tiltMaxAngleY={15}
-                glareEnable={true}
-                glareMaxOpacity={0.5}
-                className="p-6 bg-gray-900 bg-opacity-80 rounded-lg shadow-lg text-center hover:scale-105 transform transition"
-              >
-                {value.icon}
-                <h3 className="text-xl font-semibold text-white">
-                  {value.title}
-                </h3>
-                <p className="text-gray-300">{value.desc}</p>
-              </Tilt>
-            ))}
+        {/* Core Values */}
+        <motion.div
+          className="mb-20"
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          variants={staggerContainer}
+        >
+          <motion.h3 variants={fadeUpObj} className="text-2xl font-bold text-center text-white mb-10">Our Core Values</motion.h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+            {values.map((v, i) => {
+              const Icon = v.icon;
+              return (
+                <motion.div key={i} variants={fadeUpObj} className="bg-gray-900/30 border border-white/5 p-6 rounded-xl text-center group hover:bg-gray-800/50 transition-colors">
+                  <div className="mx-auto w-12 h-12 bg-indigo-500/10 text-indigo-400 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-indigo-500 group-hover:text-white transition-all">
+                    <Icon className="text-xl" />
+                  </div>
+                  <h4 className="text-white font-semibold mb-2">{v.title}</h4>
+                  <p className="text-gray-500 text-sm hidden sm:block">{v.desc}</p>
+                </motion.div>
+              );
+            })}
           </div>
-        </div>
-      </div>
+        </motion.div>
 
-      {/* Objectives with Parallax Background */}
-      <div
-        className="bg-fixed bg-center bg-cover py-24 px-6"
-        style={{ backgroundImage: `url(${parallaxObjectives})` }}
-      >
-        <div className="bg-black/70 p-10 rounded-lg">
-          <h2 className="text-4xl font-semibold text-center mb-12">
-            Our Key Objectives
-          </h2>
-          <div className="grid md:grid-cols-2 gap-12">
-            {[
-              {
-                icon: <FaDollarSign className="text-4xl text-green-500 mb-4" />,
-                title: "Profit Objective",
-                desc: "To achieve sufficient profit to finance our company growth and provide investment resources for future development.",
-              },
-              {
-                icon: (
-                  <FaUserFriends className="text-4xl text-green-500 mb-4" />
-                ),
-                title: "Customer Objective",
-                desc: "To provide services and products of the highest quality and greatest possible value to our customers, thereby gaining and holding their respect and loyalty.",
-              },
-              {
-                icon: <FaTools className="text-4xl text-green-500 mb-4" />,
-                title: "Technology Objective",
-                desc: "To participate in fields of interest that build up on our technology and customer base, enabling continuous growth and profitable contributions.",
-              },
-              {
-                icon: <FaHandshake className="text-4xl text-green-500 mb-4" />,
-                title: "Society Objective",
-                desc: "To honor our obligations to society by being an economic, intellectual, and social asset to each nation and community in which we operate.",
-              },
-            ].map((obj, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1, delay: index * 0.2 }}
-                className="p-6 bg-gray-900 bg-opacity-80 rounded-lg shadow-lg hover:scale-105 transform transition"
-              >
-                {obj.icon}
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  {obj.title}
-                </h3>
-                <p className="text-lg text-gray-300">{obj.desc}</p>
-              </motion.div>
-            ))}
+        {/* Key Objectives */}
+        <motion.div
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          variants={staggerContainer}
+        >
+          <motion.h3 variants={fadeUpObj} className="text-2xl font-bold text-center text-white mb-10">Key Objectives</motion.h3>
+          <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
+            {objectives.map((obj, i) => {
+              const Icon = obj.icon;
+              return (
+                <motion.div key={i} variants={fadeUpObj} className="flex gap-4 p-6 sm:p-8 bg-gray-900/30 border border-white/5 rounded-xl hover:border-indigo-500/30 transition-colors">
+                  <div className="w-10 h-10 flex-shrink-0 bg-gray-800 rounded-lg flex items-center justify-center text-indigo-400 mt-1">
+                    <Icon className="text-lg" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-lg mb-2">{obj.title}</h4>
+                    <p className="text-gray-400 text-sm sm:text-base leading-relaxed">{obj.desc}</p>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
-        </div>
+        </motion.div>
+
       </div>
-    </div>
+    </section>
   );
 };
 

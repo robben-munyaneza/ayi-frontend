@@ -1,240 +1,274 @@
-import React, { useState, useEffect } from "react";
-import { FaUsers, FaRocket, FaRegHandPointUp, FaBars, FaTimes } from "react-icons/fa"; // Icons
-import { motion } from "framer-motion";
-import { GoogleLogin } from "@react-oauth/google";
+import React, { useState, useEffect, useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import { FaBars, FaTimes, FaArrowRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
-import business from "../assets/login/increase.png";
-import About from "../components/About";
+import Objectives from "../components/Objectives";
 import OurTeam from "../components/OurTeam";
 import Insights from "../components/Insights";
-import Objectives from "../components/Objectives";
 import ContactUs from "../components/ContactUs";
+import Services from "../components/Services";
 import Footer from "../chat/components/Footer";
 
+/* ─── Navbar ─────────────────────────────────────────────────────── */
 const Navbar = ({ isScrolled }) => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
-  const closeMobileMenu = () => {
-    setIsMobileMenuOpen(false);
-  };
+  const [open, setOpen] = useState(false);
+  const links = [
+    { label: "Home", href: "#home" },
+    { label: "About", href: "#about" },
+    { label: "Services", href: "#services" },
+    { label: "Team", href: "#ourteam" },
+    { label: "Contact", href: "#contact" },
+  ];
 
   return (
-    <nav className={`fixed top-0 left-0 w-full z-30 transition-all duration-300 ${
-      isScrolled ? 'bg-gray-900 shadow-lg backdrop-blur-sm' : 'bg-transparent'
-    }`}>
-      <div className="flex justify-between items-center px-4 sm:px-8 py-4">
-        <div className="flex items-center">
-          <div className="w-8 h-8 mr-3">
-            <img src={logo} alt="logo" className="w-full h-full object-contain" />
-          </div>
-          <div className="text-white">
-            <div className="font-bold text-sm sm:text-lg">AYI Group</div>
-          </div>
-        </div>
-        
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex space-x-4 lg:space-x-8 text-white">
-          <a href="#home" className="hover:text-blue-300 transition-colors text-sm lg:text-base">Home</a>
-          <a href="#about" className="hover:text-blue-300 transition-colors text-sm lg:text-base">About Us</a>
-          <a href="/account-page" className="hover:text-blue-300 transition-colors text-sm lg:text-base">Services</a>
-          <a href="#ourteam" className="hover:text-blue-300 transition-colors text-sm lg:text-base">FAQs</a>
-          <a href="#contact" className="hover:text-blue-300 transition-colors text-sm lg:text-base">Contact</a>
+    <nav
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled
+          ? "bg-gray-950/95 backdrop-blur-md border-b border-white/5 shadow-xl"
+          : "bg-transparent"
+        }`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+        {/* Logo */}
+        <a href="#home" className="flex items-center gap-2.5 group">
+          <img src={logo} alt="AYI Group" className="w-8 h-8 object-contain" />
+          <span className="font-bold text-white text-sm tracking-wide">AYI Group</span>
+        </a>
+
+        {/* Desktop links */}
+        <ul className="hidden md:flex items-center gap-8">
+          {links.map((l) => (
+            <li key={l.label}>
+              <a
+                href={l.href}
+                className="text-sm text-gray-400 hover:text-white transition-colors font-medium"
+              >
+                {l.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        {/* Desktop CTA */}
+        <div className="hidden md:block">
+          <Link
+            to="/login"
+            className="text-sm font-semibold px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition-colors"
+          >
+            Sign In
+          </Link>
         </div>
 
-        {/* Mobile Menu Button */}
-        <div className="md:hidden">
-          <button
-            onClick={toggleMobileMenu}
-            className="text-white focus:outline-none p-2"
-            aria-label="Toggle mobile menu"
-          >
-            {isMobileMenuOpen ? (
-              <FaTimes className="w-5 h-5" />
-            ) : (
-              <FaBars className="w-5 h-5" />
-            )}
-          </button>
-        </div>
+        {/* Mobile toggle */}
+        <button
+          onClick={() => setOpen(!open)}
+          className="md:hidden text-white p-2"
+          aria-label="Toggle menu"
+        >
+          {open ? <FaTimes className="w-5 h-5" /> : <FaBars className="w-5 h-5" />}
+        </button>
       </div>
 
-      {/* Mobile Navigation Menu */}
-      <div className={`md:hidden transition-all duration-300 ease-in-out ${
-        isMobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
-      } overflow-hidden bg-gray-900/95 backdrop-blur-sm`}>
-        <div className="px-4 py-4 space-y-2">
-          <a 
-            href="#home" 
-            className="block text-white hover:text-blue-300 transition-colors py-3 px-2 rounded hover:bg-white/10"
-            onClick={closeMobileMenu}
-          >
-            Home
-          </a>
-          <a 
-            href="#about" 
-            className="block text-white hover:text-blue-300 transition-colors py-3 px-2 rounded hover:bg-white/10"
-            onClick={closeMobileMenu}
-          >
-            About Us
-          </a>
-          <a 
-            href="/account-page" 
-            className="block text-white hover:text-blue-300 transition-colors py-3 px-2 rounded hover:bg-white/10"
-            onClick={closeMobileMenu}
-          >
-            Services
-          </a>
-          <a 
-            href="#ourteam" 
-            className="block text-white hover:text-blue-300 transition-colors py-3 px-2 rounded hover:bg-white/10"
-            onClick={closeMobileMenu}
-          >
-            FAQs
-          </a>
-          <a 
-            href="#contact" 
-            className="block text-white hover:text-blue-300 transition-colors py-3 px-2 rounded hover:bg-white/10"
-            onClick={closeMobileMenu}
-          >
-            Contact
-          </a>
-        </div>
+      {/* Mobile menu */}
+      <div
+        className={`md:hidden overflow-hidden transition-all duration-300 ${open ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
+          } bg-gray-950/98 border-b border-white/5`}
+      >
+        <ul className="px-6 py-4 space-y-1">
+          {links.map((l) => (
+            <li key={l.label}>
+              <a
+                href={l.href}
+                onClick={() => setOpen(false)}
+                className="block py-2.5 text-sm text-gray-300 hover:text-white transition-colors"
+              >
+                {l.label}
+              </a>
+            </li>
+          ))}
+          <li className="pt-3">
+            <Link
+              to="/login"
+              onClick={() => setOpen(false)}
+              className="block text-center py-2.5 text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white transition-colors"
+            >
+              Sign In
+            </Link>
+          </li>
+        </ul>
       </div>
     </nav>
   );
 };
 
+/* ─── Hero ───────────────────────────────────────────────────────── */
+const Hero = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true });
+
+  const words = ["Investment.", "Community.", "Finance."];
+
+  return (
+    <section
+      id="home"
+      ref={ref}
+      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      style={{ background: "linear-gradient(135deg, #030712 0%, #0d1117 50%, #030712 100%)" }}
+    >
+      {/* Background grid */}
+      <div
+        className="absolute inset-0 opacity-30"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(99,102,241,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.1) 1px, transparent 1px)",
+          backgroundSize: "80px 80px",
+        }}
+      />
+
+      {/* Ambient glow */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 80% 60% at 50% 20%, rgba(99,102,241,0.12) 0%, transparent 70%)",
+        }}
+      />
+
+      {/* Floating dots */}
+      {[...Array(6)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full bg-indigo-500/20"
+          style={{
+            width: Math.random() * 6 + 4,
+            height: Math.random() * 6 + 4,
+            top: `${20 + i * 12}%`,
+            left: `${10 + i * 14}%`,
+          }}
+          animate={{ y: [0, -12, 0] }}
+          transition={{ duration: 3 + i * 0.5, repeat: Infinity, ease: "easeInOut" }}
+        />
+      ))}
+
+      {/* Content */}
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center">
+        {/* Badge */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5 }}
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 text-xs font-semibold uppercase tracking-widest mb-8"
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+          Africa Youth Investment Group
+        </motion.div>
+
+        {/* Headline */}
+        <motion.h1
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-white leading-tight tracking-tight mb-4"
+        >
+          Empowering
+          <br />
+          <span className="text-gradient">Africa's Youth.</span>
+        </motion.h1>
+
+        {/* Sub-tagline */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="text-gray-400 text-lg sm:text-xl mb-4 font-light"
+        >
+          One ecosystem built for Africa's next generation.
+        </motion.p>
+
+        {/* Word row */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="flex items-center justify-center gap-3 mb-10 flex-wrap"
+        >
+          {words.map((w, i) => (
+            <React.Fragment key={w}>
+              <span className="text-sm sm:text-base font-semibold text-white">{w}</span>
+              {i < words.length - 1 && (
+                <span className="w-1 h-1 rounded-full bg-indigo-400" />
+              )}
+            </React.Fragment>
+          ))}
+        </motion.div>
+
+        {/* CTAs */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-4"
+        >
+          <Link
+            to="/login"
+            className="group flex items-center gap-2 px-8 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40"
+          >
+            Get Started
+            <FaArrowRight className="text-sm group-hover:translate-x-1 transition-transform" />
+          </Link>
+          <a
+            href="#services"
+            className="px-8 py-3.5 border border-white/10 hover:border-white/25 text-gray-300 hover:text-white font-semibold rounded-xl transition-all duration-200 backdrop-blur-sm"
+          >
+            Explore Services
+          </a>
+        </motion.div>
+
+        {/* Scroll hint */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.6, delay: 0.8 }}
+          className="mt-20 flex flex-col items-center gap-2"
+        >
+          <span className="text-xs text-gray-600 uppercase tracking-widest">Scroll</span>
+          <motion.div
+            className="w-px h-12 bg-gradient-to-b from-gray-600 to-transparent"
+            animate={{ scaleY: [1, 0.5, 1] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          />
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+/* ─── Page ───────────────────────────────────────────────────────── */
 const Homepage = () => {
-  const [scrollY, setScrollY] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-      setIsScrolled(window.scrollY > 50);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => setIsScrolled(window.scrollY > 40);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Calculate zoom effect based on scroll position
-  const heroHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
-  const scrollProgress = Math.min(scrollY / heroHeight, 1);
-  const scale = 1 + scrollProgress * 0.2; // Reduced zoom for better mobile performance
-  const opacity = Math.max(1 - scrollProgress * 0.3, 0.7); // Prevent complete fade
-
   return (
-    <>  
-      <div className="font-sans bg-gray-900 text-white">
-        <Navbar isScrolled={isScrolled} />
-        
-        {/* Home anchor point */}
-        <div id="home"></div>
-        
-        <section className="min-h-screen relative overflow-hidden">
-          
-          {/* Zoom container */}
-          <div 
-            className="absolute inset-0 transition-transform duration-100 ease-out"
-            style={{
-              transform: `scale(${scale})`,
-              opacity: opacity
-            }}
-          >
-            
-            {/* Mobile-first background design */}
-            <div className="absolute inset-0">
-              {/* Mobile: Simple gradient background */}
-              <div className="block md:hidden w-full h-full bg-gradient-to-br from-blue-600 via-blue-700 to-purple-700"></div>
-              
-              {/* Desktop: Light background with diagonal */}
-              <div className="hidden md:block w-full h-full bg-gradient-to-br from-gray-50 to-gray-100"></div>
-            </div>
-
-            {/* Desktop diagonal cut - Hidden on mobile */}
-            <div className="hidden md:block absolute inset-0">
-              <div 
-                className="backgroundSection absolute right-0 top-0 w-3/5 lg:w-3/5 h-full bg-gradient-to-br from-blue-600 via-black to-black "
-                style={{
-                  clipPath: 'polygon(25% 0%, 100% 0%, 100% 100%, 0% 100%)'
-                }}
-              />
-            </div>
-
-            {/* Business people silhouettes - Desktop only */}
-            <div className="hidden lg:block absolute right-8 top-1/2 transform -translate-y-1/2 w-80 h-96 opacity-80">
-              <div className="relative w-full h-full">
-              </div>
-            </div>
-
-            {/* Main Content */}
-            <div className="relative z-10 min-h-screen flex items-center">
-              <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center min-h-screen">
-                  
-                  {/* Content Column */}
-                  <div className="space-y-6 lg:space-y-8 pt-20 pb-12 lg:pt-0 lg:pb-0">
-                    {/* Mobile: White text on blue background, Desktop: Dark text on light background */}
-                    <div className="space-y-4 lg:space-y-6 text-center md:text-left">
-                      <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight text-white md:text-gray-900">
-                        Empowering Africa's Youth
-                      </h1>
-                      <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/90 md:text-gray-700 leading-relaxed max-w-2xl mx-auto md:mx-0">
-                        Join us in creating a future where youth thrive
-                      </p>
-                      
-                      {/* Button with hover effect */}
-                      <div className="pt-4 lg:pt-6">
-                      <Link to={"/login"}>
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          className="bg-white md:bg-blue-600 text-blue-600 md:text-white hover:bg-blue-50 md:hover:bg-blue-700 py-3 px-8 rounded-lg text-sm sm:text-base lg:text-lg font-semibold transition duration-300 ease-in-out shadow-lg hover:shadow-xl w-full sm:w-auto max-w-xs mx-auto md:mx-0"
-                          >
-                          Get Started
-                        </motion.button>
-                          </Link>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Right Column - Visual space for desktop diagonal design */}
-                  <div className="hidden lg:block relative">
-                    {/* This space allows the diagonal blue section to show through */}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Decorative dots - Responsive positioning */}
-            <div className="absolute bottom-8 right-4 sm:bottom-12 sm:right-12 flex space-x-2">
-              <div className="w-2 h-2 sm:w-3 sm:h-3 bg-white/60 rounded-full"></div>
-              <div className="w-2 h-2 sm:w-3 sm:h-3 bg-white/80 rounded-full"></div>
-              <div className="w-2 h-2 sm:w-3 sm:h-3 bg-white rounded-full"></div>
-            </div>
-
-          </div>
-        </section>
-      </div>
-
+    <>
+      <Navbar isScrolled={isScrolled} />
+      <Hero />
+      <Services />
       <div id="about">
         <Objectives />
       </div>
       <div id="ourteam">
         <OurTeam />
       </div>
-      <div>
-        <Insights />
-      </div>
+      <Insights />
       <div id="contact">
         <ContactUs />
       </div>
-    <Footer />
+      <Footer />
     </>
   );
 };

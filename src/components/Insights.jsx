@@ -1,100 +1,134 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
 import { FaArrowRight } from 'react-icons/fa';
-import invest from '../assets/insights/invest.jpeg'
-import invest1 from '../assets/insights/invest1.jpeg'
-import people from '../assets/insights/people.jpeg'
-import tree from '../assets/insights/tree.jpeg'
+import invest from '../assets/insights/invest.jpeg';
+import invest1 from '../assets/insights/invest1.jpeg';
+import people from '../assets/insights/people.jpeg';
+import tree from '../assets/insights/tree.jpeg';
 
-// Insight article data (you can replace this with real data or connect it to an API)
+// ─── Data ───────────────────────────────────────────────────────────────────
+
 const insights = [
   {
     title: 'Empowering Youth Through Financial Education',
-    description:
-      'Financial literacy is key to unlocking the potential of young people in Africa. Discover how we are making a difference in the lives of young individuals.',
-    date: 'February 12, 2025',
-    link: '/insights/empowering-youth-financial-education',
-    image:invest
+    category: 'Education',
+    date: 'Feb 12, 2025',
+    link: '#',
+    image: invest
   },
   {
     title: 'The Future of Youth-Driven Investments',
-    description:
-      'The youth are not just the leaders of tomorrow; they are the leaders of today. Here’s why youth-driven investments are crucial to Africa’s development.',
-    date: 'January 25, 2025',
-    link: '/insights/youth-driven-investments',
-    image:invest1
+    category: 'Investment',
+    date: 'Jan 25, 2025',
+    link: '#',
+    image: invest1
   },
   {
     title: 'How Innovation Drives People Empowerment',
-    description:
-      'Innovation is a powerful tool for youth development. Read about how our approach integrates technology and innovation in all our initiatives.',
-    date: 'December 15, 2024',
-    link: '/insights/innovation-youth-empowerment',
-    image:people
-    
+    category: 'Innovation',
+    date: 'Dec 15, 2024',
+    link: '#',
+    image: people
   },
   {
-    title: 'Creating Sustainable Economic Opportunities for Youth',
-    description:
-      'Sustainability and economic empowerment go hand-in-hand. Learn about the programs we’ve implemented to ensure lasting economic opportunities for the youth.',
-    date: 'November 10, 2024',
-    link: '/insights/sustainable-economic-opportunities',
-    image:tree
+    title: 'Creating Sustainable Economic Opportunities',
+    category: 'Sustainability',
+    date: 'Nov 10, 2024',
+    link: '#',
+    image: tree
   },
 ];
 
-const InsightCard = ({ insight, index  , image}) => (
-  <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    transition={{ duration: 0.75, delay: index * 0.3 }}
-    className="bg-gray-800 text-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
-  >
-    <img src={image} alt="no internet connections" />
-    <h3 className="text-3xl font-bold text-gradient bg-clip-text text-transparent mb-4">
-      {insight.title}
-    </h3>
-    <p className="text-md text-gray-400 mb-4">{insight.description}</p>
-    <div className="flex items-center justify-between">
-      <p className="text-sm text-gray-500">{insight.date}</p>
-      <a
-        href={insight.link}
-        target='_blank'
-        className="text-green-500 flex items-center hover:underline"
-      >
-        <span className="mr-2">Read More</span>
-        <FaArrowRight />
-      </a>
-    </div>
-  </motion.div>
-);
+// ─── Animations ──────────────────────────────────────────────────────────────
+
+const containerVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.15 } },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+};
+
+// ─── Component ──────────────────────────────────────────────────────────────
 
 const Insights = () => {
-  return (
-    <div className="bg-black text-white min-h-screen p-8">
-      <motion.h1
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-        className="text-5xl text-white text-center font-extrabold text-gradient bg-clip-text mb-8"
-      >
-        Insights
-      </motion.h1>
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 0.5 }}
-        className="text-lg text-center text-gray-400 max-w-2xl mx-auto mb-16"
-      >
-        Stay informed and updated on the latest news, innovations, and thought leadership in youth empowerment, development, and investment.
-      </motion.p>
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
-        {insights.map((insight, index , image) => (
-          <InsightCard key={index} insight={insight} index={index} image={insight.image} />
-        ))}
+  return (
+    <section id="insights" ref={ref} className="py-24 bg-[#0d1117] relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* Header */}
+        <motion.div
+          className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+        >
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="h-px w-8 bg-indigo-500" />
+              <span className="text-indigo-400 text-sm font-semibold uppercase tracking-widest">News & Media</span>
+            </div>
+            <h2 className="text-4xl sm:text-5xl font-extrabold text-white">Latest Insights</h2>
+          </div>
+          <a href="#" className="hidden md:flex items-center gap-2 text-indigo-400 hover:text-indigo-300 font-semibold transition-colors">
+            View All Articles <FaArrowRight className="text-sm" />
+          </a>
+        </motion.div>
+
+        {/* Grid */}
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+        >
+          {insights.map((insight, i) => (
+            <motion.a
+              key={i}
+              href={insight.link}
+              variants={cardVariants}
+              className="group flex flex-col bg-[#030712] border border-white/5 rounded-2xl overflow-hidden hover:border-indigo-500/30 transition-all duration-300 hover:-translate-y-1"
+            >
+              {/* Image */}
+              <div className="relative aspect-[4/3] overflow-hidden">
+                <img
+                  src={insight.image}
+                  alt={insight.title}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  onError={(e) => { e.target.src = 'https://via.placeholder.com/600x400/1f2937/4b5563?text=Article' }}
+                />
+                <div className="absolute top-4 left-4 bg-indigo-600 text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full">
+                  {insight.category}
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="p-6 flex flex-col flex-1">
+                <h3 className="text-white font-bold text-lg leading-snug mb-4 group-hover:text-indigo-400 transition-colors">
+                  {insight.title}
+                </h3>
+                <div className="mt-auto flex items-center justify-between">
+                  <span className="text-gray-500 text-sm font-medium">{insight.date}</span>
+                  <span className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-colors">
+                    <FaArrowRight className="text-xs" />
+                  </span>
+                </div>
+              </div>
+            </motion.a>
+          ))}
+        </motion.div>
+
+        <a href="#" className="mt-8 md:hidden inline-flex items-center gap-2 text-indigo-400 hover:text-indigo-300 font-semibold transition-colors">
+          View All Articles <FaArrowRight className="text-sm" />
+        </a>
+
       </div>
-    </div>
+    </section>
   );
 };
 

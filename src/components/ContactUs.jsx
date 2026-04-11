@@ -1,188 +1,195 @@
 import React, { useState } from "react";
-
-
-import {
-  FaPhoneAlt,
-  FaEnvelope,
-  FaFacebookF,
-  FaTwitter,
-  FaLinkedinIn,
-  FaInstagram,
-} from "react-icons/fa";
-import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { motion, useInView } from "framer-motion";
+import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaTwitter, FaLinkedinIn } from "react-icons/fa";
+import { toast, Toaster } from "sonner";
 import axios from "axios";
-import {toast , Toaster} from "sonner"
+
 axios.defaults.baseURL = "https://ayi-backend.onrender.com";
+
 const ContactUs = () => {
-  const [name, setname] = useState("");
-  const [email, setemail] = useState("");
-  const [message, setmessage] = useState("");
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const ref = React.useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   const handleSubmit = async (e) => {
-    await axios
-      .post("/sendemail", { username: name, email: email, message: message })
-      .then((res) => console.log(res.data));
-      setname("");
-      setemail("");
-      setmessage("");
-      toast.success("your message sent successfully");
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      await axios.post("/sendemail", {
+        username: formData.name,
+        email: formData.email,
+        message: formData.message
+      });
+      toast.success("Message sent successfully. We'll be in touch!");
+      setFormData({ name: "", email: "", message: "" });
+    } catch (error) {
+      toast.error("Failed to send message. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   return (
-    <div className="bg-gray-900 text-white py-20 px-6">
-      {/* Header */}
-      <div className="text-center mb-16">
-        <motion.h1
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-          className="text-5xl font-extrabold"
-        >
-          Contact Us
-        </motion.h1>
-        <p className="text-lg text-gray-300 mt-4">
-          Get in touch with us for any queries, support, or feedback. We're here
-          to help!
-        </p>
-      </div>
+    <section id="contact" ref={ref} className="py-24 bg-[#030712] relative overflow-hidden">
+      <Toaster richColors position="top-center" />
 
-      {/* Contact Information Section */}
-      <div className="flex flex-wrap justify-between mb-16">
-        {/* Company Info */}
-        <div className="w-full md:w-1/2 lg:w-2/5 p-8 bg-gray-800 rounded-lg shadow-lg mb-12 md:mb-0">
-          <h2 className="text-3xl font-semibold mb-6">Company Info</h2>
-          <p className="text-lg text-gray-300 mb-4">
-            We are a development and investment company focused on supporting
-            youth initiatives.
-          </p>
-          <ul className="text-lg text-gray-300">
-            <li className="flex items-center mb-2">
-              <FaPhoneAlt className="mr-4 text-green-500" />
-              <div className="block ">
-                <span className=" block">+250 782 029 528</span>
-                <span className=" block">+250 788 967 462</span>
+      {/* Background glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40rem] h-[40rem] bg-indigo-600/5 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+        {/* Header */}
+        <motion.div
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <div className="h-px w-8 bg-indigo-500" />
+            <span className="text-indigo-400 text-sm font-semibold uppercase tracking-widest">Connect</span>
+            <div className="h-px w-8 bg-indigo-500" />
+          </div>
+          <h2 className="text-4xl sm:text-5xl font-extrabold text-white mb-6">Get in Touch</h2>
+        </motion.div>
+
+        <div className="grid lg:grid-cols-5 gap-12 lg:gap-8">
+
+          {/* Left: Contact Info */}
+          <motion.div
+            className="lg:col-span-2 space-y-8"
+            initial={{ opacity: 0, x: -30 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <div>
+              <h3 className="text-2xl font-bold text-white mb-2">Let's Talk</h3>
+              <p className="text-gray-400">Have questions about our investment programs or community? Drop us a line.</p>
+            </div>
+
+            <div className="space-y-6">
+              <a href="mailto:afriyouthinvest@gmail.com" className="flex items-start gap-4 group">
+                <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-colors">
+                  <FaEnvelope className="text-xl" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500 mb-1">Email</p>
+                  <p className="text-white font-medium group-hover:text-indigo-400 transition-colors">afriyouthinvest@gmail.com</p>
+                </div>
+              </a>
+
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-indigo-400">
+                  <FaPhoneAlt className="text-xl" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500 mb-1">Phone</p>
+                  <p className="text-white font-medium">+250 782 029 528</p>
+                  <p className="text-white font-medium">+250 788 967 462</p>
+                </div>
               </div>
-            </li>
-            <Link to={"mailto:afriyouthinvest@gmail.com"} target="_blank">
-              <li className="flex items-center mb-2">
-                <FaEnvelope className="mr-4 text-green-500" />
-                afriyouthinvest@gmail.com
-              </li>
-            </Link>
-            {/* <li className="flex items-center mb-2">
-              <FaFacebookF className="mr-4 text-blue-500" />
-              facebook.com/ayigroup
-            </li> */}
-            <Link to={"https://x.com/Afriyouthinvest"} target="_blank">
-              <li className="flex items-center mb-2">
-                <FaTwitter className="mr-4 text-blue-400" />
-                https://x.com/Afriyouthinvest
-              </li>
-            </Link>
-            <li className="flex items-center mb-2">
-              <FaLinkedinIn className="mr-4 text-blue-500" />
-              <Link
-                to={
-                  "https://www.linkedin.com/in/afriyouthinvest?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
-                }
-                target="_blank"
-              >
-                https://www.linkedin.com/in/afriyouthinvest
-              </Link>
-            </li>
-            {/* <li className="flex items-center mb-2">
-              <FaInstagram className="mr-4 text-pink-600" />
-              <Link to={'/asdf'}>instagram.com/ayigroup</Link>
-            </li> */}
-          </ul>
-        </div>
 
-        {/* Google Map */}
-        <div className="w-full md:w-1/3 lg:w-2/5 p-8 bg-gray-800 rounded-lg shadow-lg">
-          <h2 className="text-3xl font-semibold mb-6">Our Location</h2>
-          <div className="h-96">
-            {/* Embed Google Map */}
-            <iframe
-              title="Company Location"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14962.982749209987!2d30.0599758!3d-1.9472776!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x19dcb0b42e3c8f41%3A0xb42d2b431933e2fc!2sKigali%2C%20Rwanda!5e0!3m2!1sen!2sus!4v1692071629575!5m2!1sen!2sus"
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen=""
-              loading="lazy"
-            ></iframe>
-          </div>
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-indigo-400">
+                  <FaMapMarkerAlt className="text-xl" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500 mb-1">Location</p>
+                  <p className="text-white font-medium">Kigali, Rwanda</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Socials */}
+            <div className="pt-6 border-t border-white/5">
+              <p className="text-sm text-gray-500 mb-4">Follow us</p>
+              <div className="flex gap-4">
+                <a href="https://x.com/Afriyouthinvest" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-[#1DA1F2] transition-colors">
+                  <FaTwitter />
+                </a>
+                <a href="https://www.linkedin.com/in/afriyouthinvest" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-[#0A66C2] transition-colors">
+                  <FaLinkedinIn />
+                </a>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Right: Form */}
+          <motion.div
+            className="lg:col-span-3"
+            initial={{ opacity: 0, x: 30 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <div className="bg-[#0d1117] border border-white/5 p-8 rounded-2xl relative overflow-hidden">
+              {/* Form abstract shape */}
+              <div className="absolute -top-24 -right-24 w-48 h-48 bg-indigo-500/20 blur-3xl rounded-full" />
+
+              <h3 className="text-2xl font-bold text-white mb-6 relative z-10">Send a Message</h3>
+
+              <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label htmlFor="name" className="text-sm font-medium text-gray-400 ml-1">Name</label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 bg-[#030712] border border-white/10 rounded-xl text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all font-medium"
+                      placeholder="John Doe"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label htmlFor="email" className="text-sm font-medium text-gray-400 ml-1">Email</label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 bg-[#030712] border border-white/10 rounded-xl text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all font-medium"
+                      placeholder="john@example.com"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label htmlFor="message" className="text-sm font-medium text-gray-400 ml-1">Message</label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    required
+                    rows="5"
+                    className="w-full px-4 py-3 bg-[#030712] border border-white/10 rounded-xl text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all font-medium resize-none"
+                    placeholder="How can we help you?"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full py-4 mt-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-colors shadow-lg shadow-indigo-500/25"
+                >
+                  {isSubmitting ? "Sending..." : "Send Message"}
+                </button>
+              </form>
+            </div>
+          </motion.div>
+
         </div>
       </div>
-
-      {/* Contact Form Section */}
-      <div className="bg-gray-800 p-8 rounded-lg shadow-lg">
-        <h2 className="text-3xl font-semibold mb-6 text-center">
-          Send Us a Message
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
-          <div>
-            <label htmlFor="name" className="text-lg text-gray-300">
-              Name
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              onChange={(e) => {
-                setname(e.target.value);
-              }}
-              value={name}
-              className="w-full p-4 mt-2 bg-gray-700 text-white rounded-lg"
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="email" className="text-lg text-gray-300">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              onChange={(e) => {
-                setemail(e.target.value);
-              }}
-              value={email}
-              className="w-full p-4 mt-2 bg-gray-700 text-white rounded-lg"
-              required
-            />
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <label htmlFor="message" className="text-lg text-gray-300">
-            Message
-          </label>
-          <textarea
-            id="message"
-            name="message"
-            onChange={(e) => {
-              setmessage(e.target.value);
-            }}
-            value={message}
-            className="w-full p-4 mt-2 bg-gray-700 text-white rounded-lg"
-            rows="6"
-            required
-          ></textarea>
-        </div>
-
-        <button
-          onClick={handleSubmit}
-          type="submit"
-          className="w-full py-4 bg-green-700 text-white text-lg font-semibold rounded-lg hover:bg-green-600 transition"
-        >
-          Send Message
-        </button>
-      </div>
-      <Toaster richColors/>
-    </div>
+    </section>
   );
 };
 
