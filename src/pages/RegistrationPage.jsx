@@ -1,302 +1,194 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaUser, FaLock, FaEnvelope, FaPhoneAlt } from "react-icons/fa"; // React Icons
+import { FaUser, FaLock, FaEnvelope, FaPhoneAlt, FaMapMarkerAlt, FaEye, FaEyeSlash, FaArrowRight } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { GoogleLogin } from "@react-oauth/google";
 import logo from "../assets/logo.png";
-import business from "../assets/login/increase.png";
 import axios from "axios";
 
-// Set base URL for Axios
-axios.defaults.baseURL = "https://ayi-backend.onrender.com";
+axios.defaults.baseURL = "";
+
+const Field = ({ label, children }) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-400 mb-1.5">{label}</label>
+    {children}
+  </div>
+);
+
+const inputCls = "w-full pl-11 pr-4 py-3 bg-[#030712] border border-white/10 rounded-xl text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all";
 
 const RegistrationPage = () => {
-  // State variables for all form inputs
-  const [fullnames, setFullnames] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [location, setLocation] = useState("");
-  const [bd, setBD] = useState(""); // birthdate
-  const [nationalId, setNationalId] = useState("");
+  const [form, setForm] = useState({ fullnames: "", email: "", phone: "", location: "", bd: "", nationalId: "", password: "", confirmPassword: "" });
+  const [showPass, setShowPass] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  // Handle form submission
+
+  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    if (form.password !== form.confirmPassword) { setError("Passwords do not match."); return; }
+    if (form.password.length < 6) { setError("Password must be at least 6 characters."); return; }
     setLoading(true);
-
-    // Basic form validation
-    if (password !== confirmPassword) {
-      alert("Passwords do not match");
-      setLoading(false);
-      return;
-    }
-
     try {
-      // Send registration data to backend
-      const response = await axios.post("/api/user/register", {
-        names: fullnames,
-        email,
-        phone,
-        password,
-        confirmPassword,
-        location,
-        bd,
-        nationalId,
+      const res = await axios.post("/api/register", {
+        names: form.fullnames, email: form.email, phone: form.phone,
+        password: form.password, confirmPassword: form.confirmPassword,
+        location: form.location, bd: form.bd, nationalId: form.nationalId,
       });
-
-      // Show success message and reset form
-      alert(response.data.message);
-      navigate("/login")
+      alert(res.data.message || "Registration successful!");
+      navigate("/login");
     } catch (err) {
-      // Handle error
-      console.error("Registration error:", err.response?.data || err.message);
-      alert(err.response?.data?.message || "Something went wrong");
+      setError(err.response?.data?.message || "Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  };
-
-  // Google login callback
-  const handleGoogleLogin = (response) => {
-    console.log("Google login response:", response);
-    // Implement your Google login logic here
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-900">
-      {/* Left side: Registration Form */}
-      <div className="flex flex-col items-center justify-center w-full sm:w-1/2 p-6 bg-white text-black rounded-l-xl shadow-2xl relative">
-        {/* Logo */}
-        <div className="absolute top-4 left-4">
-          <a href="/">
-            <img src={logo} alt="AYI Group Logo" className="w-20 h-auto" />
-          </a>
-        </div>
+    <div className="min-h-screen bg-[#030712] flex relative overflow-hidden">
+      {/* Background grid */}
+      <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: "linear-gradient(rgba(99,102,241,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.1) 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
+      <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 80% 60% at 70% 50%, rgba(99,102,241,0.08) 0%, transparent 70%)" }} />
 
-        <motion.div
-          className="w-full max-w-md p-6 text-black"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6 }}
-        >
-          <h2 className="text-center text-3xl font-medium mb-6">AYI Group</h2>
-          <p className="text-center text-sm text-gray-500 mb-6">
-            Join AYI Group to start managing your savings.
+      {/* Left branding */}
+      <div className="hidden lg:flex lg:w-5/12 flex-col justify-center px-12 relative">
+        <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(99,102,241,0.06) 0%, transparent 60%)" }} />
+        <motion.div className="relative z-10 max-w-sm" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }}>
+          <img src={logo} alt="AYI Group" className="w-16 h-16 object-contain mb-8" />
+          <h1 className="text-4xl font-extrabold text-white mb-4 leading-tight">
+            Join AYI Group.<br />
+            <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Build your future.</span>
+          </h1>
+          <p className="text-gray-400 leading-relaxed mb-8">
+            Access investment tools, a thriving community, and a smart financial wallet — all in one ecosystem designed for Africa's next generation.
           </p>
-
-          <form onSubmit={handleSubmit}>
-            {/* Fullname */}
-            <div className="mb-4">
-              <label
-                htmlFor="fullnames"
-                className="block text-sm text-gray-700 font-semibold"
-              >
-                Fullnames
-              </label>
-              <div className="relative mt-2">
-                <input
-                  type="text"
-                  id="fullnames"
-                  className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition duration-200"
-                  placeholder="Enter your fullnames"
-                  value={fullnames}
-                  onChange={(e) => setFullnames(e.target.value)}
-                />
-                <FaUser className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" />
+          <div className="space-y-3">
+            {["Smart savings & investment tracking", "AYI Community — connect & collaborate", "AYI Wallet — mobile money integration", "Expert financial advisory"].map((f) => (
+              <div key={f} className="flex items-center gap-3">
+                <div className="w-5 h-5 rounded-full bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
+                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                </div>
+                <span className="text-gray-400 text-sm">{f}</span>
               </div>
-            </div>
-
-            {/* Email */}
-            <div className="mb-4">
-              <label
-                htmlFor="email"
-                className="block text-sm text-gray-700 font-semibold"
-              >
-                Email
-              </label>
-              <div className="relative mt-2">
-                <input
-                  type="email"
-                  id="email"
-                  className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition duration-200"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                <FaEnvelope className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" />
-              </div>
-            </div>
-
-            {/* Phone */}
-            <div className="mb-4">
-              <label
-                htmlFor="phone"
-                className="block text-sm text-gray-700 font-semibold"
-              >
-                Phone Number
-              </label>
-              <div className="relative mt-2">
-                <input
-                  type="text"
-                  id="phone"
-                  className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition duration-200"
-                  placeholder="Enter your phone"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                />
-                <FaPhoneAlt className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" />
-              </div>
-            </div>
-
-            {/* Location */}
-            <div className="mb-4">
-              <label
-                htmlFor="location"
-                className="block text-sm text-gray-700 font-semibold"
-              >
-                Location
-              </label>
-              <input
-                type="text"
-                id="location"
-                className="w-full p-3 border border-gray-300 rounded-lg"
-                placeholder="Enter your location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-              />
-            </div>
-
-            {/* Date of Birth */}
-            <div className="mb-4">
-              <label
-                htmlFor="bd"
-                className="block text-sm text-gray-700 font-semibold"
-              >
-                Date of Birth
-              </label>
-              <input
-                type="date"
-                id="bd"
-                className="w-full p-3 border border-gray-300 rounded-lg"
-                value={bd}
-                onChange={(e) => setBD(e.target.value)}
-              />
-            </div>
-
-            {/* National ID */}
-            <div className="mb-4">
-              <label
-                htmlFor="nationalId"
-                className="block text-sm text-gray-700 font-semibold"
-              >
-                National ID
-              </label>
-              <input
-                type="text"
-                id="nationalId"
-                className="w-full p-3 border border-gray-300 rounded-lg"
-                placeholder="Enter your national ID"
-                value={nationalId}
-                onChange={(e) => setNationalId(e.target.value)}
-              />
-            </div>
-
-            {/* Password */}
-            <div className="mb-4">
-              <label
-                htmlFor="password"
-                className="block text-sm text-gray-700 font-semibold"
-              >
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                className="w-full p-3 border border-gray-300 rounded-lg"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-
-            {/* Confirm Password */}
-            <div className="mb-4">
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm text-gray-700 font-semibold"
-              >
-                Confirm Password
-              </label>
-              <input
-                type="password"
-                id="confirmPassword"
-                className="w-full p-3 border border-gray-300 rounded-lg"
-                placeholder="Confirm your password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-            </div>
-
-            {/* Submit Button */}
-            <motion.button
-              type="submit"
-              className="w-full py-2 bg-blue-600 text-white font-medium rounded-lg shadow-md hover:bg-blue-700 transition duration-200"
-              whileHover={{ scale: 1.05 }}
-            >
-              {loading ? "Registering..." : "Register"}
-            </motion.button>
-          </form>
-
-          {/* Google Login Button */}
-          <div className="flex justify-center my-6">
-            <GoogleLogin
-              onSuccess={handleGoogleLogin}
-              onError={() => console.log("Login Failed")}
-              useOneTap
-              className="w-full py-2 bg-black text-white font-medium rounded-full shadow-xl border-2 border-gray-300 hover:bg-gray-800 transition-all duration-300 flex items-center justify-center space-x-4"
-              theme="filled_black"
-              text="signup_with"
-              shape="rectangular"
-            >
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/5/51/Google.png"
-                alt="Google Logo"
-                className="w-5 h-5"
-              />
-              <span className="text-sm">Sign up with Google</span>
-            </GoogleLogin>
-          </div>
-
-          <div className="mt-4 text-center">
-            <p className="text-xs text-gray-600">
-              Already have an account?{" "}
-              <Link to="/login" className="text-blue-600 hover:underline">
-                Login
-              </Link>
-            </p>
+            ))}
           </div>
         </motion.div>
       </div>
 
-      {/* Right side: Business Image and Slogan */}
-      <div className="hidden sm:block sm:w-1/2 bg-black text-white flex flex-col items-center justify-center p-8 rounded-r-xl shadow-2xl">
-        <img
-          src={business}
-          alt="Business Launch"
-          className="w-full h-auto rounded-lg mb-6"
-        />
-        <h3 className="text-2xl font-semibold mb-4">
-          Launch Your Future with Us
-        </h3>
-        <p className="text-sm text-gray-400 mb-4">
-          Join us in the revolution of financial empowerment, where your savings
-          grow with you.
-        </p>
-        <p className="text-sm text-gray-400 mb-6">
-          Together, we achieve financial independence and success.
-        </p>
+      {/* Right form */}
+      <div className="w-full lg:w-7/12 flex items-center justify-center px-6 py-10 relative z-10">
+        <motion.div className="w-full max-w-lg" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
+          <div className="flex items-center gap-3 mb-6 lg:hidden">
+            <img src={logo} alt="AYI" className="w-8 h-8 object-contain" />
+            <span className="font-bold text-white text-sm tracking-wide">AYI Group</span>
+          </div>
+
+          <div className="bg-[#0d1117] border border-white/8 rounded-3xl p-8 shadow-2xl">
+            <h2 className="text-2xl font-extrabold text-white mb-1">Create your account</h2>
+            <p className="text-gray-500 text-sm mb-6">Start your financial journey with AYI Group.</p>
+
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 mb-5">
+                <p className="text-red-400 text-sm">{error}</p>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid sm:grid-cols-2 gap-4">
+                <Field label="Full Name *">
+                  <div className="relative">
+                    <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm" />
+                    <input type="text" value={form.fullnames} onChange={set("fullnames")} required placeholder="Your full name" className={inputCls} />
+                  </div>
+                </Field>
+                <Field label="Email Address *">
+                  <div className="relative">
+                    <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm" />
+                    <input type="email" value={form.email} onChange={set("email")} required placeholder="you@example.com" className={inputCls} />
+                  </div>
+                </Field>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                <Field label="Phone Number">
+                  <div className="relative">
+                    <FaPhoneAlt className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm" />
+                    <input type="tel" value={form.phone} onChange={set("phone")} placeholder="+250 7XX XXX XXX" className={inputCls} />
+                  </div>
+                </Field>
+                <Field label="Location">
+                  <div className="relative">
+                    <FaMapMarkerAlt className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm" />
+                    <input type="text" value={form.location} onChange={set("location")} placeholder="e.g. Kigali, Rwanda" className={inputCls} />
+                  </div>
+                </Field>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                <Field label="Date of Birth">
+                  <input type="date" value={form.bd} onChange={set("bd")} className={`${inputCls} pl-4`} />
+                </Field>
+                <Field label="National ID">
+                  <div className="relative">
+                    <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm" />
+                    <input type="text" value={form.nationalId} onChange={set("nationalId")} placeholder="National ID number" className={inputCls} />
+                  </div>
+                </Field>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                <Field label="Password *">
+                  <div className="relative">
+                    <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm" />
+                    <input type={showPass ? "text" : "password"} value={form.password} onChange={set("password")} required placeholder="Min. 6 characters" className={`${inputCls} pr-12`} />
+                    <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-400 transition-colors">
+                      {showPass ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                  </div>
+                </Field>
+                <Field label="Confirm Password *">
+                  <div className="relative">
+                    <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm" />
+                    <input type={showConfirm ? "text" : "password"} value={form.confirmPassword} onChange={set("confirmPassword")} required placeholder="Repeat password" className={`${inputCls} pr-12`} />
+                    <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-400 transition-colors">
+                      {showConfirm ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                  </div>
+                </Field>
+              </div>
+
+              <button type="submit" disabled={loading}
+                className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 mt-2">
+                {loading ? (
+                  <><svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg> Creating account…</>
+                ) : (<>Create Account <FaArrowRight className="text-sm" /></>)}
+              </button>
+            </form>
+
+            <div className="my-5 flex items-center gap-4">
+              <div className="flex-1 h-px bg-white/8" />
+              <span className="text-xs text-gray-600">or</span>
+              <div className="flex-1 h-px bg-white/8" />
+            </div>
+
+            <div className="flex justify-center">
+              <GoogleLogin onSuccess={(r) => console.log("Google:", r)} onError={() => console.log("Google login failed")} useOneTap text="signup_with" />
+            </div>
+
+            <p className="text-center text-sm text-gray-500 mt-6">
+              Already have an account?{" "}
+              <Link to="/login" className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors">Sign in</Link>
+            </p>
+          </div>
+
+          <p className="text-center text-xs text-gray-600 mt-6">
+            <Link to="/" className="hover:text-gray-400 transition-colors">← Back to homepage</Link>
+          </p>
+        </motion.div>
       </div>
     </div>
   );

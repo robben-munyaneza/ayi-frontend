@@ -26,13 +26,22 @@ import AyiWalletLogin from "./wallet/AyiWalletLogin";
 import AyiWalletRegister from "./wallet/AyiWalletRegister";
 import ResetPassword from "./pages/ResetPassword";
 
-// PrivateRoute component for protected routes
+// Admin
+import AdminLogin from "./admin/AdminLogin";
+import AdminDashboard from "./admin/AdminDashboard";
+import TeamManager from "./admin/pages/TeamManager";
+import InsightsManager from "./admin/pages/InsightsManager";
+import ServicesManager from "./admin/pages/ServicesManager";
+import ObjectivesManager from "./admin/pages/ObjectivesManager";
+import StatsManager from "./admin/pages/StatsManager";
+
+// ─── Route Guards ──────────────────────────────────────────────────────────────
+
 const PrivateRoute = ({ element }) => {
   const token = localStorage.getItem("token");
   return token ? element : <Navigate to="/login" />;
 };
 
-// AyiSpherePrivateRoute component for AyiSphere section
 const AyiSpherePrivateRoute = ({ element }) => {
   const token = localStorage.getItem("ayi-sphere-token");
   return token ? element : <Navigate to="/ayi-sphere/login" />;
@@ -43,6 +52,13 @@ const AyiWalletPrivateRoute = ({ element }) => {
   return token ? element : <Navigate to="/ayi-wallet/login" />;
 };
 
+const AdminPrivateRoute = ({ element }) => {
+  const token = localStorage.getItem("admin-token");
+  return token ? element : <Navigate to="/admin/login" />;
+};
+
+// ─── App ───────────────────────────────────────────────────────────────────────
+
 function App() {
   return (
     <GoogleOAuthProvider clientId="project-833543702694">
@@ -52,25 +68,20 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/register" element={<RegistrationPage />} />
-        <Route path="/ayi-sphere/login" element={ <PrivateRoute element={<AyiSphereLogin /> } /> } /> 
-        <Route path="/ayi-sphere/register" element={<PrivateRoute element={<AyiSphereRegister /> } />} />
-        <Route path="/ayi-wallet/login" element={ <PrivateRoute element={<AyiWalletLogin /> } /> } /> 
-        <Route path="/ayi-wallet/register" element={<PrivateRoute element={<AyiWalletRegister /> } />} />
+        <Route path="/ayi-sphere/login" element={<PrivateRoute element={<AyiSphereLogin />} />} />
+        <Route path="/ayi-sphere/register" element={<PrivateRoute element={<AyiSphereRegister />} />} />
+        <Route path="/ayi-wallet/login" element={<PrivateRoute element={<AyiWalletLogin />} />} />
+        <Route path="/ayi-wallet/register" element={<PrivateRoute element={<AyiWalletRegister />} />} />
 
-        {/* Protected Routes with Normal Token */}
+        {/* Protected Routes */}
         <Route path="/account-page" element={<PrivateRoute element={<AccountPage />} />} />
         <Route path="/ayi-chat-room" element={<PrivateRoute element={<ChatRoom />} />} />
         <Route path="/ayi-wallet" element={<PrivateRoute element={<LandingPage />} />} />
         <Route path="/ayi-wallet/wallet" element={<AyiWalletPrivateRoute element={<WalletPage />} />} />
-
-        {/* Main Route protected with main token */}
         <Route path="/ayi-sphere" element={<PrivateRoute element={<Land />} />} />
 
-        {/* Community Subroutes protected with AyiSphere token */}
-        <Route
-          path="/ayi-sphere/community"
-          element={<AyiSpherePrivateRoute element={<CommunityPage />} />}
-        >
+        {/* Community Subroutes */}
+        <Route path="/ayi-sphere/community" element={<AyiSpherePrivateRoute element={<CommunityPage />} />}>
           <Route index element={<FeedPage />} />
           <Route path="" element={<FeedPage />} />
           <Route path="feeds" element={<FeedPage />} />
@@ -83,7 +94,18 @@ function App() {
           <Route path="settings" element={<Settings />} />
         </Route>
 
-        {/* Catch-all fallback */}
+        {/* Admin Routes */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminPrivateRoute element={<AdminDashboard />} />}>
+          <Route index element={<Navigate to="/admin/team" />} />
+          <Route path="team" element={<TeamManager />} />
+          <Route path="insights" element={<InsightsManager />} />
+          <Route path="services" element={<ServicesManager />} />
+          <Route path="objectives" element={<ObjectivesManager />} />
+          <Route path="stats" element={<StatsManager />} />
+        </Route>
+
+        {/* Fallback */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </GoogleOAuthProvider>

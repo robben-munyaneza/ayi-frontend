@@ -9,7 +9,7 @@ const Footer = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
 
-          {/* Brand */}
+          {/* Brand */}54
           <div className="space-y-6">
             <div className="flex items-center gap-2.5">
               <img src={logo} alt="AYI Group" className="w-8 h-8 object-contain" />

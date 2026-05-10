@@ -1,7 +1,9 @@
+"use client";
 import React, { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { FaCoins, FaUsers, FaWallet, FaArrowRight, FaCheckCircle, FaChartLine, FaBriefcase, FaGraduationCap } from "react-icons/fa";
 import { HiSparkles } from "react-icons/hi2";
+import { useContent } from "../context/ContentContext";
 
 // ─── Data ───────────────────────────────────────────────────────────────────
 
@@ -249,20 +251,15 @@ const ServiceCard = ({ service }) => {
   );
 };
 
-// ─── Stats Bar ───────────────────────────────────────────────────────────────
-
-const stats = [
-  { value: "6+", label: "Services" },
-  { value: "10K+", label: "Youth Members" },
-  { value: "5+", label: "Countries" },
-  { value: "24/7", label: "Support" },
-];
+// ─── Stats Bar — dynamic from ContentContext ─────────────────────────────────
 
 // ─── Main Component ────────────────────────────────────────────────────────
 
 const Services = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const { content } = useContent();
+  const stats = content.stats;
 
   return (
     <section
