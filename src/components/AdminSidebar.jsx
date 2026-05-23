@@ -1,9 +1,8 @@
 "use client";
 import React from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { FaUsers, FaNewspaper, FaCogs, FaBullseye, FaChartBar, FaSignOutAlt, FaHome, FaInbox } from 'react-icons/fa';
-import { signOut } from 'next-auth/react';
 
 import logo from '../assets/logo.png';
 
@@ -17,8 +16,9 @@ const links = [
 
 const AdminSidebar = () => {
   const pathname = usePathname();
-  const handleLogout = async () => {
-    await signOut({ redirect: true, callbackUrl: '/admin/login' });
+  const handleLogout = () => {
+    localStorage.removeItem('admin-token');
+    window.location.href = '/admin/login';
   };
 
   return (

@@ -25,6 +25,7 @@ async function dbConnect() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      serverSelectionTimeoutMS: 4000, // fail fast if Atlas unreachable (e.g. IP not whitelisted)
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {

@@ -16,28 +16,31 @@ import { defaultTeamMembers, defaultInsights, defaultObjectives, defaultStats } 
 
 async function getData() {
   try {
-    await dbConnect();
-    
-    // Fetch from DB
-    const teamDB = await Team.find({}).sort({ order: 1 }).lean();
-    const insightsDB = await Insight.find({}).sort({ createdAt: -1 }).limit(4).lean();
-    
-    // Transform Mongo data for components (e.g. stringify IDs)
-    const team = teamDB.length > 0 ? JSON.parse(JSON.stringify(teamDB)) : defaultTeamMembers;
-    const insights = insightsDB.length > 0 ? JSON.parse(JSON.stringify(insightsDB)) : defaultInsights;
-    
-    // For now, objectives and stats are static fallbacks or can be added to DB later
-    const objectives = defaultObjectives;
-    const stats = defaultStats;
-    
-    return { team, insights, objectives, stats };
+    // Race DB fetch against a 5-second timeout so the page never hangs
+    const result = await Promise.race([
+      (async () => {
+        await dbConnect();
+        const teamDB = await Team.find({}).sort({ order: 1 }).lean();
+        const insightsDB = await Insight.find({}).sort({ createdAt: -1 }).limit(4).lean();
+        return {
+          team: teamDB.length > 0 ? JSON.parse(JSON.stringify(teamDB)) : defaultTeamMembers,
+          insights: insightsDB.length > 0 ? JSON.parse(JSON.stringify(insightsDB)) : defaultInsights,
+          objectives: defaultObjectives,
+          stats: defaultStats,
+        };
+      })(),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('DB timeout — using fallback data')), 5000)
+      ),
+    ]);
+    return result;
   } catch (error) {
-    console.error("Data fetch error:", error);
+    console.warn("getData fallback:", error.message);
     return {
       team: defaultTeamMembers,
       insights: defaultInsights,
       objectives: defaultObjectives,
-      stats: defaultStats
+      stats: defaultStats,
     };
   }
 }
