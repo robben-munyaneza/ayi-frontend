@@ -12,9 +12,9 @@ import { IoChatbubblesSharp } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import Tilt from "react-parallax-tilt";
 import Navbar from "../components/Navbar";
-import Chatbox from "../pages/Chatbox";
-import Feed from "../pages/Feed"; // Assume we have a feed component
-import EWallet from "../pages/EWallet"; // Assume we have an E-wallet component
+import Chatbox from "../views/Chatbox";
+import Feed from "../views/Feed"; // Assume we have a feed component
+import EWallet from "../views/EWallet"; // Assume we have an E-wallet component
 
 const AccountPage = () => {
   const [activeSection, setActiveSection] = useState("chat");

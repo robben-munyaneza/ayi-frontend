@@ -2,12 +2,12 @@ import React from "react";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Navigate, Route, Routes } from "react-router-dom";
 
-import Login from "./pages/Login";
-import RegistrationPage from "./pages/RegistrationPage";
-import Homepage from "./pages/Homepage";
-import Settings from "./pages/Settings";
-import AccountPage from "./pages/AccountPage";
-import ChatRoom from "./pages/ChatRoom";
+import Login from "./views/Login";
+import RegistrationPage from "./views/RegistrationPage";
+import Homepage from "./views/Homepage";
+import Settings from "./views/Settings";
+import AccountPage from "./views/AccountPage";
+import ChatRoom from "./views/ChatRoom";
 import CommunityPage from "./chat/Community";
 import FeedPage from "./chat/pages/FeedPage";
 import Messages from "./chat/pages/Messages";
@@ -16,15 +16,15 @@ import Announcement from "./chat/pages/Announcement";
 import CreateGroup from "./chat/pages/CreateGroup";
 import GetVip from "./chat/pages/GetVip";
 import PostManagementPage from "./chat/pages/PostManagementPage";
-import WalletLogin from "./pages/WalletLogin";
+import WalletLogin from "./views/WalletLogin";
 import AyiSphereLogin from "./sphere/AyiSphereLogin";
 import AyiSphereRegister from "./sphere/AyiSphereRegister";
-import WalletPage from "./pages/WalletPage";
-import LandingPage from "./pages/LandingPage";
+import WalletPage from "./views/WalletPage";
+import LandingPage from "./views/LandingPage";
 import Land from "./chat/pages/Land";
 import AyiWalletLogin from "./wallet/AyiWalletLogin";
 import AyiWalletRegister from "./wallet/AyiWalletRegister";
-import ResetPassword from "./pages/ResetPassword";
+import ResetPassword from "./views/ResetPassword";
 
 // Admin
 import AdminLogin from "./admin/AdminLogin";
