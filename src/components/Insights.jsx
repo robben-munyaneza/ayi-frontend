@@ -21,29 +21,35 @@ const cardVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
 };
 
-const Insights = () => {
+const Insights = ({ insights: propInsights }) => {
+  const { content } = useContent();
+  const fallbackInsights = propInsights && propInsights.length > 0 ? propInsights : (content?.insights || []);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
-  const [insights, setInsights] = useState([]);
+  const [insights, setInsights] = useState(fallbackInsights);
 
   useEffect(() => {
+    if (propInsights && propInsights.length > 0) {
+      setInsights(propInsights);
+      return;
+    }
     const fetchInsights = async () => {
       try {
         const res = await fetch('/api/insights');
+        if (!res.ok) throw new Error("API response not ok");
         const data = await res.json();
         if (data.success && data.data.length > 0) {
           setInsights(data.data);
         } else {
-          // Auto-seed and retry if empty
-          const fallbackRes = await fetch('/api/seed');
-          if(fallbackRes.ok) fetchInsights();
+          setInsights(content?.insights || []);
         }
       } catch (error) {
         console.error("Failed to fetch insights:", error);
+        setInsights(content?.insights || []);
       }
     };
     fetchInsights();
-  }, []);
+  }, [propInsights, content?.insights]);
 
   return (
     <section id="insights" ref={ref} className="py-24 bg-[#0d1117] relative">

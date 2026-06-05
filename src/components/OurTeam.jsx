@@ -27,29 +27,35 @@ const cardVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
 };
 
-const OurTeam = () => {
+const OurTeam = ({ members }) => {
+  const { content } = useContent();
+  const fallbackTeam = members && members.length > 0 ? members : (content?.teamMembers || []);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
-  const [teamMembers, setTeamMembers] = useState([]);
+  const [teamMembers, setTeamMembers] = useState(fallbackTeam);
 
   useEffect(() => {
+    if (members && members.length > 0) {
+      setTeamMembers(members);
+      return;
+    }
     const fetchTeam = async () => {
       try {
         const res = await fetch('/api/team');
+        if (!res.ok) throw new Error("API response not ok");
         const data = await res.json();
         if (data.success && data.data.length > 0) {
           setTeamMembers(data.data);
         } else {
-          // Fallback to context if db is empty (before seeding)
-          const fallbackRes = await fetch('/api/seed'); // Just to auto-seed if empty
-          if(fallbackRes.ok) fetchTeam();
+          setTeamMembers(content?.teamMembers || []);
         }
       } catch (error) {
         console.error("Failed to fetch team:", error);
+        setTeamMembers(content?.teamMembers || []);
       }
     };
     fetchTeam();
-  }, []);
+  }, [members, content?.teamMembers]);
 
   return (
     <section id="ourteam" ref={ref} className="py-24 bg-[#030712] relative">

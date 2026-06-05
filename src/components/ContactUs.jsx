@@ -5,8 +5,6 @@ import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaTwitter, FaLinkedinIn, FaPape
 import { toast, Toaster } from "sonner";
 import axios from "axios";
 
-axios.defaults.baseURL = "https://ayi-backend.onrender.com";
-
 const inputCls = "w-full px-4 py-3 bg-[#030712] border border-white/10 rounded-xl text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all font-medium";
 
 const ContactUs = () => {
@@ -25,12 +23,27 @@ const ContactUs = () => {
     if (form.message.length < 10) { toast.error("Please write a message of at least 10 characters."); return; }
     setIsSubmitting(true);
     try {
-      await axios.post("/sendemail", {
+      // 1. Save to local database for admin dashboard
+      await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          subject: form.subject,
+          message: form.message,
+        }),
+      });
+
+      // 2. Send email via external service (Non-blocking)
+      axios.post("https://ayi-backend.onrender.com/sendemail", {
         username: form.name,
         email: form.email,
         phone: form.phone,
         subject: form.subject,
         message: form.message,
+      }).catch(e => {
+        console.warn("External email service failed, but message was saved locally.");
       });
       toast.success("Message sent! We'll be in touch soon.");
       setForm({ name: "", email: "", phone: "", subject: "", message: "" });

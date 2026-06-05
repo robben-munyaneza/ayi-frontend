@@ -53,7 +53,7 @@ const Hero = () => {
       ))}
 
       {/* Content */}
-      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center">
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center pt-24 sm:pt-32">
         {/* Badge */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
