@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "next": "next dev",
-    "build": "vite build",
-    "next:build": "next build",
+    "dev": "next dev",
+    "vite:dev": "vite",
+    "build": "next build",
+    "vite:build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
