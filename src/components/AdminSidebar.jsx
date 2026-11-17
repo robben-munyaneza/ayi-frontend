@@ -2,7 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FaUsers, FaNewspaper, FaCogs, FaBullseye, FaChartBar, FaSignOutAlt, FaHome, FaInbox } from 'react-icons/fa';
+import { FaUsers, FaNewspaper, FaCogs, FaBullseye, FaChartBar, FaSignOutAlt, FaHome, FaInbox, FaKey } from 'react-icons/fa';
 
 import logo from '../assets/logo.png';
 
@@ -10,8 +10,7 @@ const links = [
   { to: '/admin/dashboard/team', icon: FaUsers, label: 'Team Members' },
   { to: '/admin/dashboard/insights', icon: FaNewspaper, label: 'Insights / Blog' },
   { to: '/admin/dashboard/contacts', icon: FaInbox, label: 'Messages' },
-  { to: '/admin/dashboard/services', icon: FaCogs, label: 'Services' },
-  { to: '/admin/dashboard/objectives', icon: FaBullseye, label: 'Objectives' },
+  { to: '/admin/dashboard/settings', icon: FaKey, label: 'Settings' },
 ];
 
 const AdminSidebar = () => {

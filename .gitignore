@@ -30,4 +30,11 @@ Thumbs.db
 
 # Uploads
 server/uploads/
-.next/ 
+.next/
+
+# Local admin/dev utility scripts (contain or read DB credentials — keep out of git)
+admin-tool.mjs
+check-user.mjs
+generate-admin-hash.js
+update-admin-password.js
+Untitled-1.txt

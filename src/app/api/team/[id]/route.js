@@ -1,9 +1,13 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '../../../../lib/db';
 import Team from '../../../../models/Team';
+import { getAdminSession } from '../../../../lib/requireAdmin';
 
 export async function PUT(req, { params }) {
   try {
+    if (!(await getAdminSession())) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
     await dbConnect();
     const { id } = await params;
     const body = await req.json();
@@ -25,6 +29,9 @@ export async function PUT(req, { params }) {
 
 export async function DELETE(req, { params }) {
   try {
+    if (!(await getAdminSession())) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
     await dbConnect();
     const { id } = await params;
     

@@ -2,9 +2,10 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { FaArrowRight } from 'react-icons/fa';
-import { useContent } from '../context/ContentContext';
 
-// Original image imports (fallback)
+// Bundled images for the originally seeded insights. These are real image
+// assets, not content — the insight DATA comes from the database. An insight
+// document references one of these by `imageKey`, or stores its own `image`.
 import invest from '../assets/insights/invest.jpeg';
 import invest1 from '../assets/insights/invest1.jpeg';
 import people from '../assets/insights/people.jpeg';
@@ -22,34 +23,34 @@ const cardVariants = {
 };
 
 const Insights = ({ insights: propInsights }) => {
-  const { content } = useContent();
-  const fallbackInsights = propInsights && propInsights.length > 0 ? propInsights : (content?.insights || []);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
-  const [insights, setInsights] = useState(fallbackInsights);
+  const [insights, setInsights] = useState(propInsights || []);
+  const [loading, setLoading] = useState(!propInsights);
 
   useEffect(() => {
     if (propInsights && propInsights.length > 0) {
       setInsights(propInsights);
+      setLoading(false);
       return;
     }
+    let active = true;
     const fetchInsights = async () => {
       try {
         const res = await fetch('/api/insights');
-        if (!res.ok) throw new Error("API response not ok");
+        if (!res.ok) throw new Error('API response not ok');
         const data = await res.json();
-        if (data.success && data.data.length > 0) {
-          setInsights(data.data);
-        } else {
-          setInsights(content?.insights || []);
-        }
+        if (active && data.success) setInsights(data.data || []);
       } catch (error) {
-        console.error("Failed to fetch insights:", error);
-        setInsights(content?.insights || []);
+        console.error('Failed to fetch insights:', error);
+        if (active) setInsights([]);
+      } finally {
+        if (active) setLoading(false);
       }
     };
     fetchInsights();
-  }, [propInsights, content?.insights]);
+    return () => { active = false; };
+  }, [propInsights]);
 
   return (
     <section id="insights" ref={ref} className="py-24 bg-[#0d1117] relative">
@@ -72,6 +73,25 @@ const Insights = ({ insights: propInsights }) => {
           </a>
         </motion.div>
 
+        {loading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="bg-[#030712] border border-white/5 rounded-2xl overflow-hidden animate-pulse">
+                <div className="aspect-[4/3] bg-white/5" />
+                <div className="p-6 space-y-3">
+                  <div className="h-4 bg-white/10 rounded w-5/6" />
+                  <div className="h-4 bg-white/5 rounded w-2/3" />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {!loading && insights.length === 0 && (
+          <p className="text-center text-gray-500">No insights have been published yet.</p>
+        )}
+
+        {!loading && insights.length > 0 && (
         <motion.div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
           variants={containerVariants}
@@ -116,6 +136,7 @@ const Insights = ({ insights: propInsights }) => {
             );
           })}
         </motion.div>
+        )}
 
         <a href="#" className="mt-8 md:hidden inline-flex items-center gap-2 text-indigo-400 hover:text-indigo-300 font-semibold transition-colors">
           View All Articles <FaArrowRight className="text-sm" />

@@ -13,6 +13,7 @@ const ImageUploader = ({ value, onChange, label = 'Photo', className = '' }) => 
       alert(`Image must be smaller than ${MAX_SIZE_MB}MB`);
       return;
     }
+
     const reader = new FileReader();
     reader.onload = (ev) => onChange(ev.target.result);
     reader.readAsDataURL(file);

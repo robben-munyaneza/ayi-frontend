@@ -2,9 +2,10 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { FaPhoneAlt, FaEnvelope } from 'react-icons/fa';
-import { useContent } from '../context/ContentContext';
 
-// Original image imports (used as fallback when no admin image is uploaded)
+// Bundled photos for the original team members. These are real image assets
+// (not content) — the member DATA itself comes from the database. A member
+// document references one of these by `imageKey`, or stores its own `image`.
 import devotha from '../assets/team/devotha.jpg';
 import gilbert from '../assets/team/gilbert.jpg';
 import immaculee from '../assets/team/immaculee.jpg';
@@ -28,34 +29,35 @@ const cardVariants = {
 };
 
 const OurTeam = ({ members }) => {
-  const { content } = useContent();
-  const fallbackTeam = members && members.length > 0 ? members : (content?.teamMembers || []);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
-  const [teamMembers, setTeamMembers] = useState(fallbackTeam);
+  const [teamMembers, setTeamMembers] = useState(members || []);
+  const [loading, setLoading] = useState(!members);
 
   useEffect(() => {
+    // If a parent passed members in, use those and skip fetching.
     if (members && members.length > 0) {
       setTeamMembers(members);
+      setLoading(false);
       return;
     }
+    let active = true;
     const fetchTeam = async () => {
       try {
         const res = await fetch('/api/team');
-        if (!res.ok) throw new Error("API response not ok");
+        if (!res.ok) throw new Error('API response not ok');
         const data = await res.json();
-        if (data.success && data.data.length > 0) {
-          setTeamMembers(data.data);
-        } else {
-          setTeamMembers(content?.teamMembers || []);
-        }
+        if (active && data.success) setTeamMembers(data.data || []);
       } catch (error) {
-        console.error("Failed to fetch team:", error);
-        setTeamMembers(content?.teamMembers || []);
+        console.error('Failed to fetch team:', error);
+        if (active) setTeamMembers([]);
+      } finally {
+        if (active) setLoading(false);
       }
     };
     fetchTeam();
-  }, [members, content?.teamMembers]);
+    return () => { active = false; };
+  }, [members]);
 
   return (
     <section id="ourteam" ref={ref} className="py-24 bg-[#030712] relative">
@@ -77,6 +79,25 @@ const OurTeam = ({ members }) => {
           </p>
         </motion.div>
 
+        {loading && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            {Array.from({ length: 10 }).map((_, i) => (
+              <div key={i} className="bg-[#0d1117] border border-white/5 rounded-2xl overflow-hidden animate-pulse">
+                <div className="aspect-square bg-white/5" />
+                <div className="p-5 space-y-2">
+                  <div className="h-3 bg-white/10 rounded w-2/3 mx-auto" />
+                  <div className="h-3 bg-white/5 rounded w-1/2 mx-auto" />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {!loading && teamMembers.length === 0 && (
+          <p className="text-center text-gray-500">No team members have been added yet.</p>
+        )}
+
+        {!loading && teamMembers.length > 0 && (
         <motion.div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6"
           variants={containerVariants}
@@ -116,6 +137,7 @@ const OurTeam = ({ members }) => {
             );
           })}
         </motion.div>
+        )}
       </div>
     </section>
   );
