@@ -2,6 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 import { FaUsers, FaNewspaper, FaCogs, FaBullseye, FaChartBar, FaSignOutAlt, FaHome, FaInbox, FaKey } from 'react-icons/fa';
 
 import logo from '../assets/logo.png';
@@ -15,9 +16,12 @@ const links = [
 
 const AdminSidebar = () => {
   const pathname = usePathname();
-  const handleLogout = () => {
-    localStorage.removeItem('admin-token');
-    window.location.href = '/admin/login';
+  const handleLogout = async () => {
+    try {
+      localStorage.removeItem('admin-token');
+    } catch (_) {}
+    // Clear the NextAuth session cookie, then redirect to the login page.
+    await signOut({ callbackUrl: '/admin/login' });
   };
 
   return (
