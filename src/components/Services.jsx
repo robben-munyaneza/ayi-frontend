@@ -306,9 +306,9 @@ const Services = () => {
           </motion.div>
 
           <motion.h2 variants={fadeUp} className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
-            One Platform,{" "}
+            One Ecosystem,{" "}
             <span className="bg-gradient-to-r from-amber-400 via-indigo-400 to-teal-400 bg-clip-text text-transparent">
-              Three Powerful Services
+              Endless Opportunities
             </span>
           </motion.h2>
 
